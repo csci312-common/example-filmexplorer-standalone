@@ -28,23 +28,23 @@ const Title=styled.h1`
   margin: 10px 0px;
 `;
 
-function SearchBar(props) {
+function SearchBar({ searchTerm, sortType, setTerm, setType }) {
   const searchField = (
     <input
       type="text"
       placeholder="Search"
-      value={props.searchTerm}
+      value={searchTerm}
       onChange={event => {
-        props.setTerm(event.target.value);
+        setTerm(event.target.value);
       }}
     />
   );
 
   const sortTool = (
     <SearchSelect
-      value={props.sortType}
+      value={sortType}
       onChange={event => {
-        props.setType(event.target.value);
+        setType(event.target.value);
       }}
     >
       <option value="title">Title</option>

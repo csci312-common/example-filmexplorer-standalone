@@ -1,53 +1,53 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { List } from 'immutable';
 
-import movieData from './movies.json';
-import MovieTableContainer from './components/MovieTableContainer';
+import filmData from './films.json';
+import FilmTableContainer from './components/FilmTableContainer';
 import SearchBar from './components/SearchBar';
 
 
-class FilmExplorer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-      sortType: 'title',
-      movies: movieData,
-    };
-  }
 
-  setRating(filmid, rating) {
-    const alteredFilms = this.state.movies.map((movie) => {
-      if (movie.id === filmid) {
-        return Object.assign({}, movie, { rating });
+function FilmExplorer() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortType, setSortType] = useState('title');
+  const [films, setFilms] = useState(List());
+
+  // load the film data
+  useEffect(()=>{
+    setFilms(List(filmData));
+  }, []);
+
+  // change the rating of a film
+  const setRating = (filmid, rating) => {
+    const alteredFilms = films.map((film) => {
+      if (film.id === filmid) {
+        return { ...film, rating };
       }
-      return movie;
+      return film;
     });
-    this.setState({ movies: alteredFilms });
-  }
+    setFilms(alteredFilms);
+  };
 
-  render() {
-    let movieContents = (<h2>Loading...</h2>);
-    if (this.state.movies) {
-      movieContents = (<MovieTableContainer
-        searchTerm={this.state.searchTerm}
-        movies={this.state.movies}
-        sortType={this.state.sortType}
-        setRatingFor={(id, rating) => this.setRating(id, rating)}
+  const mainContents = films.size === 0 ? (<h2>Loading...</h2>) :
+    (<FilmTableContainer
+        searchTerm={searchTerm}
+        films={films}
+        sortType={sortType}
+        setRatingFor={setRating}
       />);
-    }
-
-    return (
-      <div className="FilmExplorer">
-        <SearchBar
-          searchTerm={this.state.searchTerm}
-          setTerm={(term) => { this.setState({ searchTerm: term }); }}
-          sortType={this.state.sortType}
-          setType={(type) => { this.setState({ sortType: type }); }}
-        />
-        {movieContents}
-      </div>
-    );
-  }
+    
+  return (
+    <div className="FilmExplorer">
+      <SearchBar
+        searchTerm={searchTerm}
+        setTerm={setSearchTerm}
+        sortType={sortType}
+        setType={setSortType}
+      />
+      {mainContents}
+    </div>
+  );
 }
+
 
 export default FilmExplorer;
